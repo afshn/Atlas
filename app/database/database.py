@@ -1,8 +1,13 @@
 import sqlite3
+from pathlib import Path
 
-from app.config import DATABASE_NAME
+DB_PATH = Path("data")
+
+DB_PATH.mkdir(exist_ok=True)
+
+DATABASE = DB_PATH / "atlas.db"
 
 
 def get_connection():
 
-    return sqlite3.connect(DATABASE_NAME)
+    return sqlite3.connect(DATABASE)

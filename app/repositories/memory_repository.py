@@ -1,69 +1,70 @@
+import json
+
 from app.database.database import get_connection
 
 
-def add_memory(
-    title,
-    memory_type,
-    content,
-    importance
-):
+class MemoryRepository:
 
-    conn = get_connection()
+    def save(self, memory):
 
-    cursor = conn.cursor()
+        conn = get_connection()
 
-    cursor.execute("""
+        cur = conn.cursor()
 
-    INSERT INTO memories(
+        cur.execute(
+            """
+            INSERT INTO memories
+            (
+                text,
+                created_at,
+                category,
+                action,
+                importance,
+                follow_up,
+                entities,
+                tags
+            )
 
-        title,
+            VALUES
+            (?,?,?,?,?,?,?,?)
+            """,
 
-        memory_type,
+            (
 
-        content,
+                memory.text,
 
-        importance
+                str(memory.created_at),
 
-    )
+                memory.category,
 
-    VALUES(?,?,?,?)
+                memory.action,
 
-    """,(
+                memory.importance,
 
-        title,
+                int(memory.follow_up),
 
-        memory_type,
+                json.dumps(memory.entities, ensure_ascii=False),
 
-        content,
+                json.dumps(memory.tags, ensure_ascii=False)
 
-        importance
+            )
 
-    ))
+        )
 
-    conn.commit()
+        conn.commit()
 
-    conn.close()
+        conn.close()
 
+    def all(self):
 
+        conn = get_connection()
 
-def get_memories():
+        cur = conn.cursor()
 
-    conn=get_connection()
+        cur.execute("SELECT * FROM memories ORDER BY id DESC")
 
-    cursor=conn.cursor()
+        rows = cur.fetchall()
 
-    cursor.execute("""
+        conn.close()
 
-    SELECT *
-
-    FROM memories
-
-    ORDER BY id DESC
-
-    """)
-
-    data=cursor.fetchall()
-
-    conn.close()
-
-    return data
+        return rows

@@ -1,36 +1,28 @@
 from app.database.database import get_connection
 
 
-def create_database():
+def create_financial_tables():
 
     conn = get_connection()
-
     cur = conn.cursor()
 
     cur.execute("""
-    CREATE TABLE IF NOT EXISTS memories(
+    CREATE TABLE IF NOT EXISTS transactions(
 
         id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-        text TEXT,
+        amount INTEGER,
 
-        created_at TEXT,
+        transaction_type TEXT,
 
         category TEXT,
 
-        action TEXT,
+        description TEXT,
 
-        importance INTEGER,
-
-        follow_up INTEGER,
-
-        entities TEXT,
-
-        tags TEXT
+        created_at TEXT
 
     )
     """)
 
     conn.commit()
-
     conn.close()
