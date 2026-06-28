@@ -25,17 +25,17 @@ while True:
 
         text = input("> ")
 
-        route, result = core.process(text)
+        event = core.process(text)
 
-        if route == "memory":
+        if "memory" in event.results:
 
             print("\n✓ حافظه ثبت شد")
+            print(event.results["memory"])
 
-        elif route == "financial":
+        if "financial" in event.results:
 
             print("\n✓ تراکنش مالی ثبت شد")
-
-        print(result)
+            print(event.results["financial"])
 
         input("\nEnter...")
 
