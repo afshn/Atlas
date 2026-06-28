@@ -7,29 +7,12 @@ class AtlasRouter:
     def __init__(self):
 
         self.memory = AtlasParser()
-
         self.financial = FinancialAgent()
 
-    def process(self, text):
+    def memory_route(self, text):
 
-        financial_words = [
+        return self.memory.parse(text)
 
-            "پرداخت",
+    def financial_route(self, text):
 
-            "خرید",
-
-            "فروش",
-
-            "درآمد",
-
-            "هزینه"
-
-        ]
-
-        for word in financial_words:
-
-            if word in text:
-
-                return "financial", self.financial.analyze(text)
-
-        return "memory", self.memory.parse(text)
+        return self.financial.analyze(text)

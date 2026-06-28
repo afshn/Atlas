@@ -1,15 +1,12 @@
 from app.database.schema import create_database
 from app.database.financial_schema import create_financial_tables
 
-from app.repositories.memory_repository import MemoryRepository
-from app.core.router import AtlasRouter
+from app.core.atlas_core import AtlasCore
 
 create_database()
 create_financial_tables()
 
-router = AtlasRouter()
-
-memory_repository = MemoryRepository()
+core = AtlasCore()
 
 while True:
 
@@ -28,11 +25,9 @@ while True:
 
         text = input("> ")
 
-        route, result = router.process(text)
+        route, result = core.process(text)
 
         if route == "memory":
-
-            memory_repository.save(result)
 
             print("\n✓ حافظه ثبت شد")
 
@@ -40,13 +35,13 @@ while True:
 
             print("\n✓ تراکنش مالی ثبت شد")
 
-        print()
+        print(result)
 
-        input("Enter...")
+        input("\nEnter...")
 
     elif choice == "2":
 
-        memories = memory_repository.all()
+        memories = core.get_memories()
 
         print()
 
@@ -59,21 +54,13 @@ while True:
             print()
 
             print("شناسه :", row[0])
-
             print("متن :", row[1])
-
             print("تاریخ :", row[2])
-
             print("دسته :", row[3])
-
             print("عمل :", row[4])
-
             print("اهمیت :", row[5])
-
             print("نیاز به پیگیری :", "بله" if row[6] else "خیر")
-
             print("اشخاص :", row[7])
-
             print("برچسب :", row[8])
 
             print("-" * 70)

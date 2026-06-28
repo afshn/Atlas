@@ -1,76 +1,80 @@
+import re
 from datetime import datetime
 
-from app.models.memory import Memory
+from app.models.transaction import Transaction
+from app.repositories.transaction_repository import TransactionRepository
 
 
-class AtlasParser:
+class FinancialAgent:
 
-    def parse(self, text):
+    def __init__(self):
+        self.repository = TransactionRepository()
 
-        memory = Memory(
+    def analyze(self, text):
 
-            text=text,
+        amount = self.extract_amount(text)
 
+        transaction_type = self.detect_type(text)
+
+        category = self.detect_category(text)
+
+        transaction = Transaction(
+            amount=amount,
+            transaction_type=transaction_type,
+            category=category,
+            description=text,
             created_at=datetime.now()
-
         )
 
-        self.detect(memory)
+        self.repository.save(transaction)
 
-        return memory
+        return transaction
 
-    def detect(self, memory):
+    def extract_amount(self, text):
 
-        text = memory.text
+        numbers = re.findall(r"\d+", text)
 
-        people = [
+        if numbers:
+            return int(numbers[0])
 
-            "ویونا",
+        return 0
 
-            "علی",
+    def detect_type(self, text):
 
-            "رضا",
-
-            "محمد"
-
+        expense = [
+            "پرداخت",
+            "خرید",
+            "هزینه"
         ]
 
-        for person in people:
+        income = [
+            "فروش",
+            "درآمد",
+            "دریافت"
+        ]
 
-            if person in text:
+        for word in expense:
+            if word in text:
+                return "expense"
 
-                memory.entities.append(person)
+        for word in income:
+            if word in text:
+                return "income"
 
-        if "ارسال" in text:
+        return "unknown"
 
-            memory.action = "ارسال"
+    def detect_category(self, text):
 
-            memory.follow_up = True
-
-        if "خرید" in text:
-
-            memory.action = "خرید"
-
-        if "فروش" in text:
-
-            memory.action = "فروش"
+        if "بنزین" in text:
+            return "حمل و نقل"
 
         if "چای" in text:
+            return "چای"
 
-            memory.tags.append("چای")
+        if "تبلیغات" in text:
+            return "تبلیغات"
 
-        if "هزینه" in text:
+        if "اجاره" in text:
+            return "اجاره"
 
-            memory.category = "هزینه"
-
-        elif "درآمد" in text:
-
-            memory.category = "درآمد"
-
-        else:
-
-            memory.category = "رویداد"
-
-        if memory.follow_up:
-
-            memory.importance = 4
+        return "عمومی"
